@@ -1,13 +1,14 @@
 package com.example.live_backend.repository;
 
-import com.example.live_backend.model.Schedule;
-import com.example.live_backend.model.ScheduleShare;
+import com.example.live_backend.model.Experience;
+import com.example.live_backend.model.ExperienceShare;
 import com.example.live_backend.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import com.example.live_backend.repository.ExperienceShareRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,12 +23,12 @@ public class ScheduleShareRepositoryTest {
     private TestEntityManager entityManager;
 
     @Autowired
-    private ScheduleShareRepository scheduleShareRepository;
+    private ExperienceShareRepository experienceShareRepository;
 
     private User owner;
     private User sharedWith;
-    private Schedule schedule;
-    private ScheduleShare scheduleShare;
+    private Experience schedule;
+    private ExperienceShare scheduleShare;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +46,7 @@ public class ScheduleShareRepositoryTest {
         entityManager.persist(sharedWith);
 
         // Create schedule
-        schedule = new Schedule();
+        schedule = new Experience();
         schedule.setTitle("Test Schedule");
         schedule.setStartDate(LocalDateTime.now());
         schedule.setEndDate(LocalDateTime.now().plusDays(1));
@@ -53,8 +54,8 @@ public class ScheduleShareRepositoryTest {
         entityManager.persist(schedule);
 
         // Create schedule share
-        scheduleShare = new ScheduleShare();
-        scheduleShare.setSchedule(schedule);
+        scheduleShare = new ExperienceShare();
+        scheduleShare.setExperience(schedule);
         scheduleShare.setSharedWith(sharedWith);
         entityManager.persist(scheduleShare);
 
@@ -63,7 +64,7 @@ public class ScheduleShareRepositoryTest {
 
     @Test
     void findByScheduleId_ShouldReturnShares() {
-        List<ScheduleShare> shares = scheduleShareRepository.findByScheduleId(schedule.getId());
+        List<ExperienceShare> shares = experienceShareRepository.findByExperienceId(schedule.getId());
         
         assertThat(shares).hasSize(1);
         assertThat(shares.get(0).getSharedWith().getUsername()).isEqualTo("shared");
@@ -71,16 +72,16 @@ public class ScheduleShareRepositoryTest {
 
     @Test
     void findBySharedWithId_ShouldReturnShares() {
-        List<ScheduleShare> shares = scheduleShareRepository.findBySharedWithId(sharedWith.getId());
+        List<ExperienceShare> shares = experienceShareRepository.findBySharedWithId(sharedWith.getId());
         
         assertThat(shares).hasSize(1);
-        assertThat(shares.get(0).getSchedule().getTitle()).isEqualTo("Test Schedule");
+        assertThat(shares.get(0).getExperience().getTitle()).isEqualTo("Test Schedule");
     }
 
     @Test
     void findByScheduleIdAndSharedWithId_ShouldReturnShare() {
-        Optional<ScheduleShare> share = scheduleShareRepository
-            .findByScheduleIdAndSharedWithId(schedule.getId(), sharedWith.getId());
+        Optional<ExperienceShare> share = experienceShareRepository
+            .findByExperienceIdAndSharedWithId(schedule.getId(), sharedWith.getId());
         
         assertThat(share).isPresent();
         assertThat(share.get().getSharedWith().getUsername()).isEqualTo("shared");
@@ -88,36 +89,36 @@ public class ScheduleShareRepositoryTest {
 
     @Test
     void deleteByScheduleIdAndSharedWithId_ShouldRemoveShare() {
-        scheduleShareRepository.deleteByScheduleIdAndSharedWithId(schedule.getId(), sharedWith.getId());
+        experienceShareRepository.deleteByExperienceIdAndSharedWithId(schedule.getId(), sharedWith.getId());
         entityManager.flush();
         
-        Optional<ScheduleShare> share = scheduleShareRepository
-            .findByScheduleIdAndSharedWithId(schedule.getId(), sharedWith.getId());
+        Optional<ExperienceShare> share = experienceShareRepository
+            .findByExperienceIdAndSharedWithId(schedule.getId(), sharedWith.getId());
         
         assertThat(share).isEmpty();
     }
 
     @Test
     void save_ShouldSetSharedAtTimestamp() {
-        ScheduleShare newShare = new ScheduleShare();
-        newShare.setSchedule(schedule);
+        ExperienceShare newShare = new ExperienceShare();
+        newShare.setExperience(schedule);
         newShare.setSharedWith(sharedWith);
         
-        ScheduleShare savedShare = scheduleShareRepository.save(newShare);
+        ExperienceShare savedShare = experienceShareRepository.save(newShare);
         
         assertThat(savedShare.getSharedAt()).isNotNull();
     }
 
     @Test
     void findByScheduleId_WithNoShares_ShouldReturnEmptyList() {
-        Schedule newSchedule = new Schedule();
+        Experience newSchedule = new Experience();
         newSchedule.setTitle("Unshared Schedule");
         newSchedule.setStartDate(LocalDateTime.now());
         newSchedule.setEndDate(LocalDateTime.now().plusDays(1));
         newSchedule.setUser(owner);
         entityManager.persist(newSchedule);
         
-        List<ScheduleShare> shares = scheduleShareRepository.findByScheduleId(newSchedule.getId());
+        List<ExperienceShare> shares = experienceShareRepository.findByExperienceId(newSchedule.getId());
         
         assertThat(shares).isEmpty();
     }

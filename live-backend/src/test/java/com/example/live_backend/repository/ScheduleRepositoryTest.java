@@ -1,8 +1,8 @@
 package com.example.live_backend.repository;
 
-import com.example.live_backend.model.Schedule;
+import com.example.live_backend.model.Experience;
 import com.example.live_backend.model.User;
-import com.example.live_backend.model.ScheduleVisibility;
+import com.example.live_backend.model.ExperienceVisibility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +21,11 @@ public class ScheduleRepositoryTest {
     private TestEntityManager entityManager;
 
     @Autowired
-    private ScheduleRepository scheduleRepository;
+    private ExperienceRepository scheduleRepository;
 
     private User testUser;
-    private Schedule schedule1;
-    private Schedule schedule2;
+    private Experience schedule1;
+    private Experience schedule2;
 
     @BeforeEach
     void setUp() {
@@ -37,22 +37,22 @@ public class ScheduleRepositoryTest {
         entityManager.persist(testUser);
 
         // Create test schedules
-        schedule1 = new Schedule();
+        schedule1 = new Experience();
         schedule1.setTitle("Test Schedule 1");
         schedule1.setDescription("Description 1");
         schedule1.setStartDate(LocalDateTime.now());
         schedule1.setEndDate(LocalDateTime.now().plusDays(1));
         schedule1.setUser(testUser);
-        schedule1.setVisibility(ScheduleVisibility.PUBLIC);
+        schedule1.setVisibility(ExperienceVisibility.PUBLIC);
         entityManager.persist(schedule1);
 
-        schedule2 = new Schedule();
+        schedule2 = new Experience();
         schedule2.setTitle("Test Schedule 2");
         schedule2.setDescription("Description 2");
         schedule2.setStartDate(LocalDateTime.now().plusDays(2));
         schedule2.setEndDate(LocalDateTime.now().plusDays(3));
         schedule2.setUser(testUser);
-        schedule2.setVisibility(ScheduleVisibility.PRIVATE);
+        schedule2.setVisibility(ExperienceVisibility.PRIVATE);
         entityManager.persist(schedule2);
 
         entityManager.flush();
@@ -60,7 +60,7 @@ public class ScheduleRepositoryTest {
 
     @Test
     void findByUserIdOrderByStartDateDesc_ShouldReturnSchedulesInOrder() {
-        List<Schedule> schedules = scheduleRepository.findByUserIdOrderByStartDateDesc(testUser.getId());
+        List<Experience> schedules = scheduleRepository.findByUserIdOrderByStartDateDesc(testUser.getId());
         
         assertThat(schedules).hasSize(2);
         assertThat(schedules.get(0).getStartDate())
@@ -69,7 +69,7 @@ public class ScheduleRepositoryTest {
 
     @Test
     void findByUserUsernameOrderByStartDateDesc_ShouldReturnSchedulesInOrder() {
-        List<Schedule> schedules = scheduleRepository.findByUserUsernameOrderByStartDateDesc("testuser");
+        List<Experience> schedules = scheduleRepository.findByUserUsernameOrderByStartDateDesc("testuser");
         
         assertThat(schedules).hasSize(2);
         assertThat(schedules.get(0).getStartDate())
@@ -78,13 +78,13 @@ public class ScheduleRepositoryTest {
 
     @Test
     void saveSchedule_ShouldSetCreatedAndUpdatedDates() {
-        Schedule newSchedule = new Schedule();
+        Experience newSchedule = new Experience();
         newSchedule.setTitle("New Schedule");
         newSchedule.setStartDate(LocalDateTime.now());
         newSchedule.setEndDate(LocalDateTime.now().plusDays(1));
         newSchedule.setUser(testUser);
 
-        Schedule savedSchedule = scheduleRepository.save(newSchedule);
+        Experience savedSchedule = scheduleRepository.save(newSchedule);
 
         assertThat(savedSchedule.getCreatedAt()).isNotNull();
         assertThat(savedSchedule.getUpdatedAt()).isNotNull();

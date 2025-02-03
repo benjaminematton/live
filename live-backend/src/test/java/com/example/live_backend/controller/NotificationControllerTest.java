@@ -1,7 +1,6 @@
 package com.example.live_backend.controller;
 
 import com.example.live_backend.dto.NotificationResponse;
-import com.example.live_backend.security.CustomUserDetails;
 import com.example.live_backend.service.NotificationService;
 import com.security.testutils.WithCustomUser;
 
@@ -13,7 +12,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;

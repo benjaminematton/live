@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,15 @@ public class UserService {
         return mapToProfileResponse(updatedUser);
     }
 
+    public List<UserProfileResponse> getFriends(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        
+        return user.getFriends().stream()
+            .map(this::mapToProfileResponse)
+            .collect(Collectors.toList());
+    }
+
     private UserProfileResponse mapToProfileResponse(User user) {
         UserProfileResponse response = new UserProfileResponse();
         response.setId(user.getId());
@@ -54,5 +65,42 @@ public class UserService {
         response.setProfilePicture(user.getProfilePicture());
         response.setBio(user.getBio());
         return response;
+    }
+
+    public void followUser(String currentUsername, Long userIdToFollow) {
+        User currentUser = userRepository.findByUsername(currentUsername)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found")); 
+        User userToFollow = userRepository.findById(userIdToFollow)
+            .orElseThrow(() -> new UsernameNotFoundException("User to follow not found"));
+
+        // Add userToFollow to currentUser's following set
+        currentUser.getFollowing().add(userToFollow);
+        userRepository.save(currentUser);
+    }
+
+    public void unfollowUser(String currentUsername, Long userIdToUnfollow) {
+        User currentUser = userRepository.findByUsername(currentUsername)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User userToUnfollow = userRepository.findById(userIdToUnfollow)
+            .orElseThrow(() -> new UsernameNotFoundException("User to unfollow not found"));
+
+        currentUser.getFollowing().remove(userToUnfollow);
+        userRepository.save(currentUser);
+    }
+
+    public List<UserProfileResponse> getFollowing(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.getFollowing().stream()
+            .map(this::mapToProfileResponse)
+            .collect(Collectors.toList());
+    }
+
+    public List<UserProfileResponse> getFollowers(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.getFollowers().stream()
+            .map(this::mapToProfileResponse)
+            .collect(Collectors.toList());
     }
 } 

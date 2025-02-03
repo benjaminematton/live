@@ -2,7 +2,7 @@ package com.example.live_backend.service;
 
 import com.example.live_backend.dto.NotificationResponse;
 import com.example.live_backend.model.Notification;
-import com.example.live_backend.model.Schedule;
+import com.example.live_backend.model.Experience;
 import com.example.live_backend.model.User;
 import com.example.live_backend.repository.NotificationRepository;
 import com.example.live_backend.repository.UserRepository;
@@ -19,7 +19,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    public void notifyScheduleShared(User targetUser, Schedule schedule) {
+    public void notifyScheduleShared(User targetUser, Experience schedule) {
         createNotification(
             targetUser,
             String.format("%s shared a schedule '%s' with you", 
@@ -29,7 +29,7 @@ public class NotificationService {
         );
     }
 
-    public void notifyScheduleUpdated(Schedule schedule) {
+    public void notifyScheduleUpdated(Experience schedule) {
         schedule.getShares().forEach(share -> {
             createNotification(
                 share.getSharedWith(),
@@ -40,7 +40,7 @@ public class NotificationService {
         });
     }
 
-    public void notifyScheduleUnshared(User targetUser, Schedule schedule) {
+    public void notifyScheduleUnshared(User targetUser, Experience schedule) {
         createNotification(
             targetUser,
             String.format("%s has stopped sharing schedule '%s' with you", 

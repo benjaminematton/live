@@ -1,6 +1,6 @@
 package com.example.live_backend.dto;
 
-import com.example.live_backend.model.ScheduleVisibility;
+import com.example.live_backend.model.ExperienceVisibility;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class CreateScheduleRequest {
+public class CreateExperienceRequest {
     @NotBlank
     private String title;
     
@@ -22,8 +22,13 @@ public class CreateScheduleRequest {
     @NotNull
     private LocalDateTime endDate;
     
-    private ScheduleVisibility visibility;
+    private ExperienceVisibility visibility;
     
     @Valid
     private List<ActivityDto> activities;
+
+    @NotNull
+    private String username;
+    
+    private List<String> shareWithUsernames;
 } 

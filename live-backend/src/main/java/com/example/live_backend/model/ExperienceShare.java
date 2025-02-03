@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "schedule_shares",
        uniqueConstraints = @UniqueConstraint(columnNames = {"schedule_id", "shared_with_id"}))
-public class ScheduleShare {
+public class ExperienceShare {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+    @JoinColumn(name = "experience_id", nullable = false)
+    private Experience experience;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shared_with_id", nullable = false)
@@ -28,4 +28,6 @@ public class ScheduleShare {
     protected void onCreate() {
         sharedAt = LocalDateTime.now();
     }
+
+    private double rating;
 } 

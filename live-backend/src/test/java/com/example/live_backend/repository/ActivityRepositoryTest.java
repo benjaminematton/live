@@ -1,7 +1,7 @@
 package com.example.live_backend.repository;
 
 import com.example.live_backend.model.Activity;
-import com.example.live_backend.model.Schedule;
+import com.example.live_backend.model.Experience;
 import com.example.live_backend.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ public class ActivityRepositoryTest {
     private ActivityRepository activityRepository;
 
     private User testUser;
-    private Schedule testSchedule;
+    private Experience testSchedule;
     private Activity activity1;
     private Activity activity2;
 
@@ -38,7 +38,7 @@ public class ActivityRepositoryTest {
         entityManager.persist(testUser);
 
         // Create test schedule
-        testSchedule = new Schedule();
+        testSchedule = new Experience();
         testSchedule.setTitle("Test Schedule");
         testSchedule.setStartDate(LocalDateTime.now());
         testSchedule.setEndDate(LocalDateTime.now().plusDays(1));
@@ -51,7 +51,6 @@ public class ActivityRepositoryTest {
         activity1.setDescription("Description 1");
         activity1.setStartTime(LocalDateTime.now());
         activity1.setEndTime(LocalDateTime.now().plusHours(1));
-        activity1.setSchedule(testSchedule);
         entityManager.persist(activity1);
 
         activity2 = new Activity();
@@ -59,7 +58,6 @@ public class ActivityRepositoryTest {
         activity2.setDescription("Description 2");
         activity2.setStartTime(LocalDateTime.now().plusHours(2));
         activity2.setEndTime(LocalDateTime.now().plusHours(3));
-        activity2.setSchedule(testSchedule);
         entityManager.persist(activity2);
 
         entityManager.flush();
@@ -67,7 +65,7 @@ public class ActivityRepositoryTest {
 
     @Test
     void findByScheduleIdOrderByStartTime_ShouldReturnActivitiesInOrder() {
-        List<Activity> activities = activityRepository.findByScheduleIdOrderByStartTime(testSchedule.getId());
+        List<Activity> activities = activityRepository.findByExperienceIdOrderByStartTime(testSchedule.getId());
         
         assertThat(activities).hasSize(2);
         assertThat(activities.get(0).getStartTime())
@@ -80,7 +78,6 @@ public class ActivityRepositoryTest {
         newActivity.setTitle("New Activity");
         newActivity.setStartTime(LocalDateTime.now());
         newActivity.setEndTime(LocalDateTime.now().plusHours(1));
-        newActivity.setSchedule(testSchedule);
 
         Activity savedActivity = activityRepository.save(newActivity);
 
@@ -91,7 +88,7 @@ public class ActivityRepositoryTest {
     @Test
     void deleteActivity_ShouldRemoveActivity() {
         activityRepository.delete(activity1);
-        List<Activity> activities = activityRepository.findByScheduleIdOrderByStartTime(testSchedule.getId());
+        List<Activity> activities = activityRepository.findByExperienceIdOrderByStartTime(testSchedule.getId());
         
         assertThat(activities).hasSize(1);
         assertThat(activities.get(0).getId()).isEqualTo(activity2.getId());

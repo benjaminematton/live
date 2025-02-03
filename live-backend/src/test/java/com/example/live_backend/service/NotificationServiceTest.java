@@ -2,7 +2,7 @@ package com.example.live_backend.service;
 
 import com.example.live_backend.dto.NotificationResponse;
 import com.example.live_backend.model.Notification;
-import com.example.live_backend.model.Schedule;
+import com.example.live_backend.model.Experience;
 import com.example.live_backend.model.User;
 import com.example.live_backend.repository.NotificationRepository;
 import com.example.live_backend.repository.UserRepository;
@@ -43,7 +43,7 @@ public class NotificationServiceTest {
     private ArgumentCaptor<Notification> notificationCaptor;
 
     private User testUser;
-    private Schedule testSchedule;
+    private Experience testSchedule;
     private User scheduleOwner;
 
     @BeforeEach
@@ -56,7 +56,7 @@ public class NotificationServiceTest {
         scheduleOwner.setId(2L);
         scheduleOwner.setUsername("owner");
 
-        testSchedule = new Schedule();
+        testSchedule = new Experience();
         testSchedule.setId(1L);
         testSchedule.setTitle("Test Schedule");
         testSchedule.setUser(scheduleOwner);

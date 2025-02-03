@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ShareScheduleRequest {
+public class ShareExperienceRequest {
     @NotEmpty
     private List<String> usernames;
 } 

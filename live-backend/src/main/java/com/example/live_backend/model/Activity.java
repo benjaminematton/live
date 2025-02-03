@@ -25,9 +25,9 @@ public class Activity {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "experience_id", nullable = false)
+    // private Experience experience;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

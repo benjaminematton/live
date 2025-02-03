@@ -9,8 +9,8 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "schedules")
-public class Schedule {
+@Table(name = "Experience")
+public class Experience {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,18 +23,18 @@ public class Schedule {
     @Column(nullable = false)
     private LocalDateTime startDate;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDateTime endDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "experience", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Activity> activities = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
-    private ScheduleVisibility visibility = ScheduleVisibility.PRIVATE;
+    private ExperienceVisibility visibility = ExperienceVisibility.PRIVATE;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -43,7 +43,7 @@ public class Schedule {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "schedule")
-    private Set<ScheduleShare> shares;
+    private Set<ExperienceShare> shares;
 
     @PrePersist
     protected void onCreate() {
@@ -56,7 +56,7 @@ public class Schedule {
         updatedAt = LocalDateTime.now();
     }
 
-    public Set<ScheduleShare> getShares() {
+    public Set<ExperienceShare> getShares() {
         return shares;
     }
 } 

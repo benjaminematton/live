@@ -62,8 +62,8 @@ public class ChatGPTServiceTest {
 
         mockChatGPTResponse(mockResponse);
 
-        List<ActivityDto> suggestions = chatGPTService.generateScheduleSuggestions(
-                "Plan a day in the city", startDate, endDate);
+        List<ActivityDto> suggestions = chatGPTService.generateExperienceSuggestions( 
+                "Plan a day in the city", startDate, endDate, "New York");  
 
         assertThat(suggestions).hasSize(1);
         assertThat(suggestions.get(0).getTitle()).isEqualTo("Morning Coffee");
@@ -96,8 +96,8 @@ public class ChatGPTServiceTest {
 
         mockChatGPTResponse(mockResponse);
 
-        List<ActivityDto> suggestions = chatGPTService.generateScheduleSuggestions(
-                "Plan a business day", startDate, endDate);
+        List<ActivityDto> suggestions = chatGPTService.generateExperienceSuggestions(
+                "Plan a business day", startDate, endDate, "New York");
 
         assertThat(suggestions).hasSize(2);
         assertThat(suggestions.get(0).getTitle()).isEqualTo("Morning Coffee");
@@ -110,7 +110,7 @@ public class ChatGPTServiceTest {
         mockChatGPTResponse(invalidResponse);
 
         assertThrows(RuntimeException.class, () -> {
-            chatGPTService.generateScheduleSuggestions("Plan a day", startDate, endDate);
+            chatGPTService.generateExperienceSuggestions("Plan a day", startDate, endDate, "New York");
         });
     }
 
@@ -119,8 +119,8 @@ public class ChatGPTServiceTest {
         String emptyResponse = "[]";
         mockChatGPTResponse(emptyResponse);
 
-        List<ActivityDto> suggestions = chatGPTService.generateScheduleSuggestions(
-                "Plan a day", startDate, endDate);
+        List<ActivityDto> suggestions = chatGPTService.generateExperienceSuggestions(
+                "Plan a day", startDate, endDate, "New York");
 
         assertThat(suggestions).isEmpty();
     }
@@ -141,7 +141,7 @@ public class ChatGPTServiceTest {
 
         mockChatGPTResponse(mockResponse);
 
-        List<ActivityDto> refinedActivities = chatGPTService.refineSchedule(
+        List<ActivityDto> refinedActivities = chatGPTService.refineExperience(
                 currentActivities, "Make it longer");
 
         assertThat(refinedActivities).hasSize(1);
@@ -167,7 +167,7 @@ public class ChatGPTServiceTest {
 
         mockChatGPTResponse(mockResponse);
 
-        List<ActivityDto> refinedActivities = chatGPTService.refineSchedule(
+        List<ActivityDto> refinedActivities = chatGPTService.refineExperience(
                 currentActivities, "Update description only");
 
         assertThat(refinedActivities).hasSize(1);
@@ -184,7 +184,7 @@ public class ChatGPTServiceTest {
             .thenThrow(new RuntimeException("API Error"));
 
         assertThrows(RuntimeException.class, () -> {
-            chatGPTService.refineSchedule(currentActivities, "Make changes");
+            chatGPTService.refineExperience(currentActivities, "Make changes");
         });
     }
 

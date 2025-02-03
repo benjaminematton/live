@@ -1,12 +1,11 @@
 package com.example.live_backend.controller;
 
 import com.example.live_backend.dto.ActivityDto;
-import com.example.live_backend.dto.CreateScheduleRequest;
+import com.example.live_backend.dto.CreateExperienceRequest;
 import com.example.live_backend.model.Activity;
-import com.example.live_backend.model.Schedule;
-import com.example.live_backend.model.ScheduleVisibility;
-import com.example.live_backend.security.CustomUserDetails;
-import com.example.live_backend.service.ScheduleService;
+import com.example.live_backend.model.Experience;
+import com.example.live_backend.model.ExperienceVisibility;
+import com.example.live_backend.service.ExperienceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.security.testutils.WithCustomUser;
 
@@ -17,7 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -41,15 +39,15 @@ public class ScheduleControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private ScheduleService scheduleService;
+    private ExperienceService scheduleService;
 
-    private Schedule testSchedule;
-    private CreateScheduleRequest createRequest;
+    private Experience testSchedule;
+    private CreateExperienceRequest createRequest;
     private Activity testActivity;
 
     @BeforeEach
     void setUp() {
-        testSchedule = new Schedule();
+        testSchedule = new Experience();
         testSchedule.setId(1L);
         testSchedule.setTitle("Test Schedule");
         testSchedule.setStartDate(LocalDateTime.now());
@@ -60,23 +58,22 @@ public class ScheduleControllerTest {
         activityDto.setStartTime(LocalDateTime.now());
         activityDto.setEndTime(LocalDateTime.now().plusHours(1));
 
-        createRequest = new CreateScheduleRequest();
+        createRequest = new CreateExperienceRequest();
         createRequest.setTitle("Test Schedule");
         createRequest.setStartDate(LocalDateTime.now());
         createRequest.setEndDate(LocalDateTime.now().plusDays(1));
-        createRequest.setVisibility(ScheduleVisibility.PRIVATE);
+        createRequest.setVisibility(ExperienceVisibility.PRIVATE);
         createRequest.setActivities(Arrays.asList(activityDto));
 
         testActivity = new Activity();
         testActivity.setId(1L);
         testActivity.setTitle("Test Activity");
-        testActivity.setSchedule(testSchedule);
     }
 
     @Test
     @WithCustomUser(username="testuser")
     void createSchedule_Success() throws Exception {
-        when(scheduleService.createSchedule(eq("testuser"), any(CreateScheduleRequest.class)))
+        when(scheduleService.createExperience(eq("testuser"), any(CreateExperienceRequest.class)))
                 .thenReturn(testSchedule);
 
         mockMvc.perform(post("/api/schedules")
@@ -89,8 +86,8 @@ public class ScheduleControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     void getUserSchedules_Success() throws Exception {
-        List<Schedule> schedules = Arrays.asList(testSchedule);
-        when(scheduleService.getUserSchedules("testuser")).thenReturn(schedules);
+        List<Experience> schedules = Arrays.asList(testSchedule);
+        when(scheduleService.getUserExperiences("testuser")).thenReturn(schedules);
 
         mockMvc.perform(get("/api/schedules"))
                 .andExpect(status().isOk())
@@ -99,8 +96,8 @@ public class ScheduleControllerTest {
 
     @Test
     @WithCustomUser(username="testuser")
-    void getScheduleById_Success() throws Exception {
-        when(scheduleService.getScheduleById(1L, "testuser")).thenReturn(testSchedule);
+        void getScheduleById_Success() throws Exception {
+            when(scheduleService.getExperienceById(1L, "testuser")).thenReturn(testSchedule);
 
         mockMvc.perform(get("/api/schedules/1"))
                 .andExpect(status().isOk())
@@ -110,7 +107,7 @@ public class ScheduleControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     void updateSchedule_Success() throws Exception {
-        when(scheduleService.updateSchedule(eq(1L), eq("testuser"), any(CreateScheduleRequest.class)))
+        when(scheduleService.updateExperience(eq(1L), eq("testuser"), any(CreateExperienceRequest.class)))
                 .thenReturn(testSchedule);
 
         mockMvc.perform(put("/api/schedules/1")
@@ -123,19 +120,19 @@ public class ScheduleControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     void deleteSchedule_Success() throws Exception {
-        doNothing().when(scheduleService).deleteSchedule(1L, "testuser");
+        doNothing().when(scheduleService).deleteExperience(1L, "testuser");
 
         mockMvc.perform(delete("/api/schedules/1"))
                 .andExpect(status().isNoContent());
 
-        verify(scheduleService).deleteSchedule(1L, "testuser");
+        verify(scheduleService).deleteExperience(1L, "testuser");
     }
 
     @Test
     @WithCustomUser(username="testuser")
     void getScheduleActivities_Success() throws Exception {
         List<Activity> activities = Arrays.asList(testActivity);
-        when(scheduleService.getScheduleActivities(1L, "testuser")).thenReturn(activities);
+        when(scheduleService.getExperienceActivities(1L, "testuser")).thenReturn(activities);
 
         mockMvc.perform(get("/api/schedules/1/activities"))
                 .andExpect(status().isOk())

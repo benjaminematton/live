@@ -34,14 +34,14 @@ public class ChatGPTService {
      * Generates schedule suggestions based on the user's prompt and optional start/end times.
      * It appends the conversation so ChatGPT sees prior context if the user calls again.
      */
-    public List<ActivityDto> generateScheduleSuggestions(String prompt, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<ActivityDto> generateExperienceSuggestions(String prompt, LocalDateTime startDate, LocalDateTime endDate, String location) {    
         try {
             // If this is the first call in the conversation, add a system message
             if (conversation.isEmpty()) {
                 String systemPrompt = """
                     You are an assistant that returns only valid JSON.
                     
-                    The user wants to do the following:
+                    The user wants to do the following in {location}:
 
                     \"\"\" 
                     {PROMPT_PLACEHOLDER}
@@ -51,10 +51,11 @@ public class ChatGPTService {
                     - If the user input implies only one desired activity, return one object.
                     - If the user input implies multiple activities, return multiple objects.
 
+                    Identify specific real place names for each desired activity and put that in the "title" field.
+
                     Return only a JSON array of objects, where each object has exactly the following keys:
                     - "title" (string)
                     - "description" (string)
-                    - "location" (string)
                     - "startTime" (ISO 8601 format)
                     - "endTime" (ISO 8601 format)
 
@@ -108,7 +109,7 @@ public class ChatGPTService {
      * Let user refine the *existing* schedule. We pass the current schedule and a refinement prompt,
      * then ChatGPT returns an updated schedule. We again append to the same conversation for context.
      */
-    public List<ActivityDto> refineSchedule(List<ActivityDto> currentActivities, String refinementPrompt) {
+    public List<ActivityDto> refineExperience(List<ActivityDto> currentActivities, String refinementPrompt) {
         try {
             // Convert current schedule to JSON
             String currentScheduleJson = objectMapper.writeValueAsString(currentActivities);
@@ -116,6 +117,16 @@ public class ChatGPTService {
             // Build a new user message that references the existing schedule
             String userMessageContent = "Current schedule: " + currentScheduleJson 
                     + "\n\nRefinement request: " + refinementPrompt;
+
+            String systemPrompt = """
+                You are an assistant that refines schedules.
+                You receive the user's current schedule as a JSON array of activities, plus a refinement request.
+                Return only the updated schedule in valid JSON, preserving the same structure and keys: [title, description, location, startTime, endTime].
+                If the user wants changes—like editing times, removing or adding activities—apply them.
+                Do not include any extra commentary, keys, or code blocks.
+                Output must be a JSON array of objects, each with exactly the five keys listed.
+                No other text outside of the JSON array.
+            """;
 
             // Add user message to conversation
             conversation.add(new ChatMessage("user", userMessageContent));

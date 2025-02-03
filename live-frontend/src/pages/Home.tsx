@@ -20,7 +20,7 @@ function Home() {
   const { data: friendSchedules } = useQuery<Schedule[]>({
     queryKey: ['friend-schedules'],
     queryFn: async () => {
-      const response = await client.get('/api/schedules/friends');
+      const response = await client.get('/api/Users/friends');
       return response.data;
     }
   });

@@ -1,6 +1,6 @@
 package com.example.live_backend.model;
 
-public enum ScheduleVisibility {
+public enum ExperienceVisibility {
     PRIVATE,
     FRIENDS_ONLY,
     PUBLIC
