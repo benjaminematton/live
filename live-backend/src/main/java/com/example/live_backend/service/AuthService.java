@@ -3,14 +3,13 @@ package com.example.live_backend.service;
 import com.example.live_backend.dto.AuthResponse;
 import com.example.live_backend.dto.LoginRequest;
 import com.example.live_backend.dto.RegisterRequest;
-import com.example.live_backend.model.User;
-import com.example.live_backend.repository.UserRepository;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.User.UserRepository;
 import com.example.live_backend.security.JwtUtil;
 import com.example.live_backend.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

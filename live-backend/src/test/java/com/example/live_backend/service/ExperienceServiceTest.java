@@ -1,16 +1,17 @@
 package com.example.live_backend.service;
 
-import com.example.live_backend.dto.ActivityDto;
-import com.example.live_backend.dto.CreateExperienceRequest;
-import com.example.live_backend.model.Activity;
-import com.example.live_backend.model.Experience;
-import com.example.live_backend.model.ExperienceVisibility;
-import com.example.live_backend.model.User;
-import com.example.live_backend.repository.ActivityRepository;
-import com.example.live_backend.repository.ExperienceRepository;
-import com.example.live_backend.repository.UserRepository;
-import com.example.live_backend.repository.ExperienceShareRepository;
-import com.example.live_backend.model.ExperienceShare;
+import com.example.live_backend.dto.Activity.ActivityRequest;
+import com.example.live_backend.dto.Experience.ExperienceRequest;
+import com.example.live_backend.dto.Experience.ExperienceResponse;
+import com.example.live_backend.model.Experience.Experience;
+import com.example.live_backend.model.Experience.ExperienceVisibility;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.Activity.ActivityRepository;
+import com.example.live_backend.repository.Experience.ExperienceRepository;
+import com.example.live_backend.repository.Experience.ExperienceShareRepository;
+import com.example.live_backend.repository.User.UserRepository;
+import com.example.live_backend.service.Experience.ExperienceService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,8 +50,8 @@ public class ExperienceServiceTest {
 
     private User testUser;
     private Experience testSchedule;
-    private CreateExperienceRequest createRequest;
-    private ActivityDto activityDto;
+    private ExperienceRequest createRequest;
+    private ActivityRequest activityRequest;
 
     @BeforeEach
     void setUp() {
@@ -65,17 +66,17 @@ public class ExperienceServiceTest {
         testSchedule.setStartDate(LocalDateTime.now());
         testSchedule.setEndDate(LocalDateTime.now().plusDays(1));
 
-        activityDto = new ActivityDto();
-        activityDto.setTitle("Test Activity");
-        activityDto.setStartTime(LocalDateTime.now());
-        activityDto.setEndTime(LocalDateTime.now().plusHours(1));
+        activityRequest = new ActivityRequest();
+        activityRequest.setTitle("Test Activity");
+        activityRequest.setStartTime(LocalDateTime.now());
+        activityRequest.setEndTime(LocalDateTime.now().plusHours(1));
 
-        createRequest = new CreateExperienceRequest();
+        createRequest = new ExperienceRequest();
         createRequest.setTitle("Test Schedule");
         createRequest.setStartDate(LocalDateTime.now());
         createRequest.setEndDate(LocalDateTime.now().plusDays(1));
         createRequest.setVisibility(ExperienceVisibility.PRIVATE);
-        createRequest.setActivities(Arrays.asList(activityDto));
+        createRequest.setActivities(Arrays.asList(activityRequest));
     }
 
     @Test
@@ -83,7 +84,7 @@ public class ExperienceServiceTest {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
         when(experienceRepository.save(any(Experience.class))).thenReturn(testSchedule);
 
-        Experience result = experienceService.createExperience("testuser", createRequest);  
+        ExperienceResponse result = experienceService.createExperience("testuser", createRequest);  
 
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo(createRequest.getTitle());
@@ -105,7 +106,7 @@ public class ExperienceServiceTest {
         when(experienceRepository.findByUserUsernameOrderByStartDateDesc("testuser"))
                 .thenReturn(schedules);
 
-        List<Experience> result = experienceService.getUserExperiences("testuser");
+        List<ExperienceResponse> result = experienceService.getUserExperiences("testuser");
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getTitle()).isEqualTo(testSchedule.getTitle());
@@ -115,7 +116,7 @@ public class ExperienceServiceTest {
     void getScheduleById_Success() {
         when(experienceRepository.findById(1L)).thenReturn(Optional.of(testSchedule));
 
-        Experience result = experienceService.getExperienceById(1L, "testuser");
+        ExperienceResponse result = experienceService.getExperienceById(1L, "testuser");
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);

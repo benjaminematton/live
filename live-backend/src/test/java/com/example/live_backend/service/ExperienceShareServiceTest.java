@@ -16,15 +16,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.example.live_backend.model.User;
-import com.example.live_backend.dto.ActivityDto;
-import com.example.live_backend.dto.CreateExperienceRequest;
-import com.example.live_backend.model.Experience;
-import com.example.live_backend.model.ExperienceShare;
-import com.example.live_backend.model.ExperienceVisibility;
-import com.example.live_backend.repository.UserRepository;
-import com.example.live_backend.repository.ExperienceShareRepository;
-import com.example.live_backend.repository.ExperienceRepository;
+import com.example.live_backend.model.Experience.Experience;
+import com.example.live_backend.model.Experience.ExperienceShare;
+import com.example.live_backend.model.Experience.ExperienceVisibility;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.dto.Activity.ActivityRequest;
+import com.example.live_backend.dto.Experience.ExperienceRequest;
+import com.example.live_backend.repository.Experience.ExperienceRepository;
+import com.example.live_backend.repository.Experience.ExperienceShareRepository;
+import com.example.live_backend.repository.User.UserRepository;
+import com.example.live_backend.service.Experience.ExperienceShareService;
 @ExtendWith(MockitoExtension.class)
 public class ExperienceShareServiceTest {
 
@@ -42,8 +43,8 @@ public class ExperienceShareServiceTest {
 
     private User testUser;
     private Experience testSchedule;
-    private ActivityDto activityDto;
-    private CreateExperienceRequest createRequest;
+    private ActivityRequest activityRequest;
+    private ExperienceRequest createRequest;
 
     @BeforeEach
     void setUp() {
@@ -58,17 +59,17 @@ public class ExperienceShareServiceTest {
         testSchedule.setStartDate(LocalDateTime.now());
         testSchedule.setEndDate(LocalDateTime.now().plusDays(1));
 
-        activityDto = new ActivityDto();
-        activityDto.setTitle("Test Activity");
-        activityDto.setStartTime(LocalDateTime.now());
-        activityDto.setEndTime(LocalDateTime.now().plusHours(1));
+        activityRequest = new ActivityRequest();
+        activityRequest.setTitle("Test Activity");
+        activityRequest.setStartTime(LocalDateTime.now());
+        activityRequest.setEndTime(LocalDateTime.now().plusHours(1));
 
-        createRequest = new CreateExperienceRequest();
+        createRequest = new ExperienceRequest();
         createRequest.setTitle("Test Schedule");
         createRequest.setStartDate(LocalDateTime.now());
         createRequest.setEndDate(LocalDateTime.now().plusDays(1));
         createRequest.setVisibility(ExperienceVisibility.PRIVATE);
-        createRequest.setActivities(Arrays.asList(activityDto));
+        createRequest.setActivities(Arrays.asList(activityRequest));
     }
 
     @Test

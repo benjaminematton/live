@@ -1,9 +1,10 @@
 package com.example.live_backend.service;
 
-import com.example.live_backend.dto.UpdateProfileRequest;
-import com.example.live_backend.dto.UserProfileResponse;
-import com.example.live_backend.model.User;
-import com.example.live_backend.repository.UserRepository;
+import com.example.live_backend.dto.User.UserRequest;
+import com.example.live_backend.dto.User.UserResponse;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.User.UserRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,7 @@ public class UserServiceTest {
     private UserService userService;
 
     private User testUser;
-    private UpdateProfileRequest updateRequest;
+    private UserRequest updateRequest;
 
     @BeforeEach
     void setUp() {
@@ -38,16 +39,16 @@ public class UserServiceTest {
         testUser.setEmail("test@example.com");
         testUser.setBio("Original bio");
 
-        updateRequest = new UpdateProfileRequest();
+        updateRequest = new UserRequest();
         updateRequest.setEmail("new@example.com");
         updateRequest.setBio("Updated bio");
     }
 
     @Test
     void getUserProfile_Success() {
-        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
-        UserProfileResponse response = userService.getUserProfile("testuser");
+        UserResponse response = userService.getUserById(1L);
 
         assertNotNull(response);
         assertEquals(testUser.getUsername(), response.getUsername());
@@ -59,7 +60,7 @@ public class UserServiceTest {
         when(userRepository.findByUsername("nonexistent")).thenReturn(Optional.empty());
 
         assertThrows(UsernameNotFoundException.class, () -> {
-            userService.getUserProfile("nonexistent");
+            userService.getUserById(3L);
         });
     }
 
@@ -69,7 +70,7 @@ public class UserServiceTest {
         when(userRepository.existsByEmail("new@example.com")).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
-        UserProfileResponse response = userService.updateProfile("testuser", updateRequest);
+        UserResponse response = userService.updateUser(1L, updateRequest);
 
         assertNotNull(response);
         assertEquals(updateRequest.getEmail(), response.getEmail());
@@ -82,7 +83,7 @@ public class UserServiceTest {
         when(userRepository.existsByEmail("new@example.com")).thenReturn(true);
 
         assertThrows(RuntimeException.class, () -> {
-            userService.updateProfile("testuser", updateRequest);
+            userService.updateUser(1L, updateRequest);
         });
     }
 } 

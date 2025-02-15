@@ -6,12 +6,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.live_backend.dto.AchievementReponse;
-import com.example.live_backend.dto.UserAchievementResponse;
-import com.example.live_backend.repository.UserAchievementRepository;
-import com.example.live_backend.repository.UserRepository;
+import com.example.live_backend.dto.Achivement.AchievementResponse;
+import com.example.live_backend.dto.User.UserAchievementResponse;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.User.UserAchievementRepository;
+import com.example.live_backend.repository.User.UserRepository;
 import com.example.live_backend.service.AchievementService;
-import com.example.live_backend.model.User;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -28,8 +29,8 @@ public class AchievementController {
     private final UserRepository userRepository;
 
     @GetMapping
-    public ResponseEntity<List<AchievementReponse>> getAllAchievements() {
-        List<AchievementReponse> all = achievementService.findAll(); // or from repo
+    public ResponseEntity<List<AchievementResponse>> getAllAchievements() {
+        List<AchievementResponse> all = achievementService.findAll(); // or from repo
         return ResponseEntity.ok(all);
     }
 

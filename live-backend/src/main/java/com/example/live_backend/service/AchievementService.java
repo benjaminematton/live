@@ -5,12 +5,13 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 import com.example.live_backend.model.Achievement;
-import com.example.live_backend.model.User;
-import com.example.live_backend.model.UserAchievement;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.model.User.UserAchievement;
 import com.example.live_backend.repository.AchievementRepository;
-import com.example.live_backend.repository.UserAchievementRepository;
-import com.example.live_backend.dto.AchievementReponse;
-import com.example.live_backend.dto.UserAchievementResponse;
+import com.example.live_backend.repository.User.UserAchievementRepository;
+import com.example.live_backend.dto.Achivement.AchievementResponse;
+import com.example.live_backend.dto.User.UserAchievementResponse;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,9 @@ public class AchievementService {
         // 3) If user qualifies, create a UserAchievement record
         awardAchievementIfEligible(user, "FIRST_POST");
         awardAchievementIfEligible(user, "10_POSTS");
+        awardAchievementIfEligible(user, "25_POSTS");
+        awardAchievementIfEligible(user, "50_POSTS");
+        awardAchievementIfEligible(user, "100_POSTS");
         // ...
     }
 
@@ -40,6 +44,11 @@ public class AchievementService {
         // Use the user's visit history to see how many unique places they've visited
         // If threshold is met, award it
         awardAchievementIfEligible(user, "3_PLACES");
+        awardAchievementIfEligible(user, "10_PLACES");
+        awardAchievementIfEligible(user, "25_PLACES");
+        awardAchievementIfEligible(user, "50_PLACES");
+        awardAchievementIfEligible(user, "100_PLACES");
+        awardAchievementIfEligible(user, "NEW_CITY");
         // ...
     }
 
@@ -69,16 +78,16 @@ public class AchievementService {
         // Optionally, notify user via push/email/etc.
     }
 
-    public List<AchievementReponse> findAll() {
+    public List<AchievementResponse> findAll() {
         return achievementRepository.findAll().stream()
             .map(achievement -> {
-                AchievementReponse response = new AchievementReponse();
+                AchievementResponse response = new AchievementResponse();
                 response.setId(achievement.getId());
                 response.setName(achievement.getName());
                 response.setDescription(achievement.getDescription());
                 response.setCode(achievement.getCode());
                 response.setIconUrl(achievement.getIconUrl());
-                response.setPointsAwarded(achievement.getPointsAwarded());
+                response.setPoints(achievement.getPoints());
                 return response;
             })
             .collect(Collectors.toList());
@@ -91,7 +100,7 @@ public class AchievementService {
                 response.setId(userAchievement.getId());
                 response.setUserId(user.getId());
                 
-                AchievementReponse achievementResponse = new AchievementReponse();
+                AchievementResponse achievementResponse = new AchievementResponse();
                 achievementResponse.setId(userAchievement.getAchievement().getId());
                 achievementResponse.setName(userAchievement.getAchievement().getName());
                 achievementResponse.setDescription(userAchievement.getAchievement().getDescription());
@@ -99,7 +108,7 @@ public class AchievementService {
                 
                 response.setAchievement(achievementResponse);
                 response.setDateEarned(userAchievement.getDateEarned());
-                response.setPointsAwarded(userAchievement.getAchievement().getPointsAwarded());
+                response.setPoints(userAchievement.getAchievement().getPoints());
                 return response;
             })
             .collect(Collectors.toList());

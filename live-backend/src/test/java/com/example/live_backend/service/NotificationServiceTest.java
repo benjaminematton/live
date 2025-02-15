@@ -2,10 +2,11 @@ package com.example.live_backend.service;
 
 import com.example.live_backend.dto.NotificationResponse;
 import com.example.live_backend.model.Notification;
-import com.example.live_backend.model.Experience;
-import com.example.live_backend.model.User;
+import com.example.live_backend.model.Experience.Experience;
+import com.example.live_backend.model.User.User;
 import com.example.live_backend.repository.NotificationRepository;
-import com.example.live_backend.repository.UserRepository;
+import com.example.live_backend.repository.User.UserRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

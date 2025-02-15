@@ -2,7 +2,7 @@ package com.example.live_backend.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.live_backend.model.Post;
+import com.example.live_backend.dto.Post.PostResponse;
 import com.example.live_backend.security.CustomUserDetails;
 
 import org.springframework.http.ResponseEntity;
@@ -21,14 +21,12 @@ public class PostController {
     private final PostService postService;
     
     @GetMapping("/feed/following")
-    public ResponseEntity<List<Post>> getFollowingFeed(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Post> posts = postService.getFollowingFeed(userDetails.getUsername());
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<List<PostResponse>> getFollowingFeed(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(postService.getFollowingFeed(userDetails.getUsername()));
     }
 
     @GetMapping("/feed/explore")
-    public ResponseEntity<List<Post>> getExploreFeed() {
-        List<Post> posts = postService.getExploreFeed();
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<List<PostResponse>> getExploreFeed() {
+        return ResponseEntity.ok(postService.getExploreFeed());
     }
 }

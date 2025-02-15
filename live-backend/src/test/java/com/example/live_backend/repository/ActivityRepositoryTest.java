@@ -1,8 +1,10 @@
 package com.example.live_backend.repository;
 
-import com.example.live_backend.model.Activity;
-import com.example.live_backend.model.Experience;
-import com.example.live_backend.model.User;
+import com.example.live_backend.model.Activity.Activity;
+import com.example.live_backend.model.Experience.Experience;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.Activity.ActivityRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

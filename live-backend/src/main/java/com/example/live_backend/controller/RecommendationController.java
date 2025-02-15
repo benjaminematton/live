@@ -4,9 +4,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.example.live_backend.dto.ActivityDto;
+import com.example.live_backend.dto.Activity.ActivityResponse;
 import com.example.live_backend.service.ChatGPTService;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,7 @@ public class RecommendationController {
     private final ChatGPTService chatGPTService;
 
     @PostMapping("/recommendations")
-    public List<ActivityDto> recommendActivities(@RequestBody Map<String, String> payload) {
+    public List<ActivityResponse> recommendActivities(@RequestBody Map<String, String> payload) {
         System.out.println("Received request for activity: " + payload); // Debug log
         try {
             String chosenActivity = payload.get("chosenActivity");

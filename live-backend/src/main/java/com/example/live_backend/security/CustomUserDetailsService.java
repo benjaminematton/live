@@ -1,7 +1,8 @@
 package com.example.live_backend.security;
 
-import com.example.live_backend.model.User;
-import com.example.live_backend.repository.UserRepository;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.User.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

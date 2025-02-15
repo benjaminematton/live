@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
+import com.example.live_backend.model.User.User;
+
 @Data
 @Entity
 @Table(name = "notifications")

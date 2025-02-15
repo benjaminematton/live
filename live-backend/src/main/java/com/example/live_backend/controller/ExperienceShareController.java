@@ -1,9 +1,10 @@
 package com.example.live_backend.controller;
 
-import com.example.live_backend.dto.ShareExperienceRequest;
-import com.example.live_backend.model.Experience;
+import com.example.live_backend.dto.Experience.ShareExperienceRequest;
+import com.example.live_backend.model.Experience.Experience;
 import com.example.live_backend.security.CustomUserDetails;
-import com.example.live_backend.service.ExperienceShareService;
+import com.example.live_backend.service.Experience.ExperienceShareService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

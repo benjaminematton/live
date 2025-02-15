@@ -1,14 +1,15 @@
 package com.example.live_backend.repository;
 
-import com.example.live_backend.model.Experience;
-import com.example.live_backend.model.ExperienceShare;
-import com.example.live_backend.model.User;
+import com.example.live_backend.model.Experience.Experience;
+import com.example.live_backend.model.Experience.ExperienceShare;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.Experience.ExperienceShareRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import com.example.live_backend.repository.ExperienceShareRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

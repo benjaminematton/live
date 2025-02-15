@@ -1,9 +1,7 @@
 package com.example.live_backend.controller;
 
-import com.example.live_backend.dto.UpdateProfileRequest;
-import com.example.live_backend.dto.UserProfileResponse;
-import com.example.live_backend.model.User;
-import com.example.live_backend.security.CustomUserDetails;
+import com.example.live_backend.dto.User.UserRequest;
+import com.example.live_backend.dto.User.UserResponse;
 import com.example.live_backend.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.security.testutils.WithCustomUser;
@@ -16,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -38,13 +35,13 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    private UserProfileResponse mockProfile;
-    private UpdateProfileRequest updateRequest;
+    private UserResponse mockProfile;
+    private UserRequest updateRequest;
 
     @BeforeEach
     void setUp() {
         // Setup mock profile response
-        mockProfile = new UserProfileResponse();
+        mockProfile = new UserResponse();
         mockProfile.setId(1L);
         mockProfile.setUsername("testuser");
         mockProfile.setEmail("test@example.com");
@@ -52,7 +49,7 @@ public class UserControllerTest {
         mockProfile.setProfilePicture("profile.jpg");
 
         // Setup update request
-        updateRequest = new UpdateProfileRequest();
+        updateRequest = new UserRequest();
         updateRequest.setEmail("new@example.com");
         updateRequest.setBio("Updated bio");
         updateRequest.setProfilePicture("new-profile.jpg");
@@ -61,7 +58,7 @@ public class UserControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     public void getOwnProfile_Success() throws Exception {
-        when(userService.getUserProfile("testuser")).thenReturn(mockProfile);
+        when(userService.getUser(1L)).thenReturn(mockProfile); 
 
         mockMvc.perform(get("/api/users/profile"))
                 .andExpect(status().isOk())
@@ -79,7 +76,7 @@ public class UserControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     public void getUserProfile_Success() throws Exception {
-        when(userService.getUserProfile("otheruser")).thenReturn(mockProfile);
+        when(userService.getUser(2L)).thenReturn(mockProfile);
 
         mockMvc.perform(get("/api/users/otheruser"))
                 .andExpect(status().isOk())
@@ -89,7 +86,7 @@ public class UserControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     public void getUserProfile_NotFound() throws Exception {
-        when(userService.getUserProfile("nonexistent"))
+        when(userService.getUser(3L))
                 .thenThrow(new UsernameNotFoundException("User not found"));
 
         mockMvc.perform(get("/api/users/nonexistent"))
@@ -99,12 +96,12 @@ public class UserControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     public void updateProfile_Success() throws Exception {
-        UserProfileResponse updatedProfile = new UserProfileResponse();
+        UserResponse updatedProfile = new UserResponse();
         updatedProfile.setUsername("testuser");
         updatedProfile.setEmail("new@example.com");
         updatedProfile.setBio("Updated bio");
 
-        when(userService.updateProfile(eq("testuser"), any(UpdateProfileRequest.class)))
+        when(userService.updateUser(eq(1L), any(UserRequest.class)))
                 .thenReturn(updatedProfile);
 
         mockMvc.perform(put("/api/users/profile")
@@ -118,7 +115,7 @@ public class UserControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     public void updateProfile_InvalidEmail() throws Exception {
-        UpdateProfileRequest invalidRequest = new UpdateProfileRequest();
+        UserRequest invalidRequest = new UserRequest();
         invalidRequest.setEmail("invalid-email"); // Invalid email format
 
         mockMvc.perform(put("/api/users/profile")
@@ -130,7 +127,7 @@ public class UserControllerTest {
     @Test
     @WithCustomUser(username="testuser")
     public void updateProfile_EmailAlreadyExists() throws Exception {
-        when(userService.updateProfile(eq("testuser"), any(UpdateProfileRequest.class)))
+        when(userService.updateUser(eq(1L), any(UserRequest.class)))
                 .thenThrow(new RuntimeException("Email already in use"));
 
         mockMvc.perform(put("/api/users/profile")

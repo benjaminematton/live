@@ -1,14 +1,21 @@
 package com.example.live_backend.service;
 
-import com.example.live_backend.dto.UpdateProfileRequest;
-import com.example.live_backend.dto.UserProfileResponse;
-import com.example.live_backend.model.User;
-import com.example.live_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.example.live_backend.dto.User.UserRequest;
+import com.example.live_backend.dto.User.UserResponse;
+import com.example.live_backend.mapper.UserMapper;
+import java.util.Set;
+
+import com.example.live_backend.model.User.GroupMembership;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.User.UserRepository;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -16,17 +23,30 @@ import java.util.stream.Collectors;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
-    public UserProfileResponse getUserProfile(String username) {
-        User user = userRepository.findByUsername(username)
+    public UserResponse createUser(UserRequest request) {
+        User user = userMapper.toEntity(request);
+        
+        // Hash the password before storing
+        String hashedPassword = passwordEncoder.encode(request.getPassword());
+        user.setPassword(hashedPassword);
+
+        // Possibly set other fields
+        return userMapper.toResponse(user);
+    }
+
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         
-        return mapToProfileResponse(user);
+        return userMapper.toResponse(user);
     }
 
     @Transactional
-    public UserProfileResponse updateProfile(String username, UpdateProfileRequest request) {
-        User user = userRepository.findByUsername(username)
+    public UserResponse updateUser(Long id, UserRequest request) {
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
@@ -45,30 +65,20 @@ public class UserService {
         }
 
         User updatedUser = userRepository.save(user);
-        return mapToProfileResponse(updatedUser);
+        return userMapper.toResponse(updatedUser);
     }
 
-    public List<UserProfileResponse> getFriends(String username) {
-        User user = userRepository.findByUsername(username)
+    public Set<UserResponse> getFriends(Long id) {
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         
         return user.getFriends().stream()
-            .map(this::mapToProfileResponse)
-            .collect(Collectors.toList());
+            .map(userMapper::toResponse)
+            .collect(Collectors.toSet());
     }
 
-    private UserProfileResponse mapToProfileResponse(User user) {
-        UserProfileResponse response = new UserProfileResponse();
-        response.setId(user.getId());
-        response.setUsername(user.getUsername());
-        response.setEmail(user.getEmail());
-        response.setProfilePicture(user.getProfilePicture());
-        response.setBio(user.getBio());
-        return response;
-    }
-
-    public void followUser(String currentUsername, Long userIdToFollow) {
-        User currentUser = userRepository.findByUsername(currentUsername)
+    public void followUser(Long currentUserId, Long userIdToFollow) {
+        User currentUser = userRepository.findById(currentUserId)
             .orElseThrow(() -> new UsernameNotFoundException("User not found")); 
         User userToFollow = userRepository.findById(userIdToFollow)
             .orElseThrow(() -> new UsernameNotFoundException("User to follow not found"));
@@ -78,8 +88,8 @@ public class UserService {
         userRepository.save(currentUser);
     }
 
-    public void unfollowUser(String currentUsername, Long userIdToUnfollow) {
-        User currentUser = userRepository.findByUsername(currentUsername)
+    public void unfollowUser(Long currentUserId, Long userIdToUnfollow) {
+        User currentUser = userRepository.findById(currentUserId)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         User userToUnfollow = userRepository.findById(userIdToUnfollow)
             .orElseThrow(() -> new UsernameNotFoundException("User to unfollow not found"));
@@ -88,19 +98,38 @@ public class UserService {
         userRepository.save(currentUser);
     }
 
-    public List<UserProfileResponse> getFollowing(String username) {
-        User user = userRepository.findByUsername(username)
+    public Set<UserResponse > getFollowing(Long id) {   
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return user.getFollowing().stream()
-            .map(this::mapToProfileResponse)
-            .collect(Collectors.toList());
+            .map(userMapper::toResponse)
+            .collect(Collectors.toSet());
     }
 
-    public List<UserProfileResponse> getFollowers(String username) {
-        User user = userRepository.findByUsername(username)
+    public Set<UserResponse > getFollowers(Long id) {
+        User user = userRepository.findById(id)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return user.getFollowers().stream()
-            .map(this::mapToProfileResponse)
-            .collect(Collectors.toList());
+            .map(userMapper::toResponse)
+            .collect(Collectors.toSet());
+    }
+
+    public List<GroupMembership> getGroupMembershipsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getGroupMemberships();
+    }
+
+    public boolean getUserShareLocation(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.isShareLocation();
+    }
+
+    public void setUserShareLocation(Long userId, boolean shareLocation) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setShareLocation(shareLocation);
+        userRepository.save(user);
     }
 } 

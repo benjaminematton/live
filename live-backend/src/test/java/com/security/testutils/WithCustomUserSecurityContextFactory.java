@@ -6,8 +6,10 @@ import org.springframework.security.test.context.support.WithSecurityContextFact
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.example.live_backend.model.User.User;
 import com.example.live_backend.security.CustomUserDetails;
-import com.example.live_backend.model.User;
+
 import java.util.Collection;
 import java.util.Arrays;
 import java.util.stream.Collectors;

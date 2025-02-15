@@ -1,8 +1,10 @@
 package com.example.live_backend.repository;
 
-import com.example.live_backend.model.Experience;
-import com.example.live_backend.model.User;
-import com.example.live_backend.model.ExperienceVisibility;
+import com.example.live_backend.model.Experience.Experience;
+import com.example.live_backend.model.Experience.ExperienceVisibility;
+import com.example.live_backend.model.User.User;
+import com.example.live_backend.repository.Experience.ExperienceRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +41,6 @@ public class ScheduleRepositoryTest {
         // Create test schedules
         schedule1 = new Experience();
         schedule1.setTitle("Test Schedule 1");
-        schedule1.setDescription("Description 1");
         schedule1.setStartDate(LocalDateTime.now());
         schedule1.setEndDate(LocalDateTime.now().plusDays(1));
         schedule1.setUser(testUser);
@@ -48,7 +49,6 @@ public class ScheduleRepositoryTest {
 
         schedule2 = new Experience();
         schedule2.setTitle("Test Schedule 2");
-        schedule2.setDescription("Description 2");
         schedule2.setStartDate(LocalDateTime.now().plusDays(2));
         schedule2.setEndDate(LocalDateTime.now().plusDays(3));
         schedule2.setUser(testUser);

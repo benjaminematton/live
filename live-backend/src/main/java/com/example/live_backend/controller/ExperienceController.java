@@ -1,12 +1,9 @@
 package com.example.live_backend.controller;
 
-import com.example.live_backend.dto.CreateExperienceRequest;
-import com.example.live_backend.dto.ActivityDto;
-import com.example.live_backend.model.Activity;
-import com.example.live_backend.model.Experience;
 import com.example.live_backend.security.CustomUserDetails;
-import com.example.live_backend.service.ExperienceService;
 import com.example.live_backend.service.ChatGPTService;
+import com.example.live_backend.service.Experience.ExperienceService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import com.example.live_backend.dto.Activity.ActivityResponse;
+import com.example.live_backend.dto.Experience.ExperienceRequest;
+import com.example.live_backend.dto.Experience.ExperienceResponse;
 @RestController
 @RequestMapping("/api/experiences")
 @RequiredArgsConstructor
@@ -27,35 +26,31 @@ public class ExperienceController {
     private final ChatGPTService chatGPTService;
 
     @PostMapping
-    public ResponseEntity<Experience> createExperience(
+    public ResponseEntity<ExperienceResponse> createExperience(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody CreateExperienceRequest request) {
-        Experience experience = experienceService.createExperience(userDetails.getUsername(), request);
-        return ResponseEntity.ok(experience);
+            @Valid @RequestBody ExperienceRequest request) {
+        return ResponseEntity.ok(experienceService.createExperience(userDetails.getUsername(), request));
     }
 
     @GetMapping
-    public ResponseEntity<List<Experience>> getUserExperiences(
+    public ResponseEntity<List<ExperienceResponse>> getUserExperiences(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<Experience> experiences = experienceService.getUserExperiences(userDetails.getUsername());
-        return ResponseEntity.ok(experiences);
+        return ResponseEntity.ok(experienceService.getUserExperiences(userDetails.getUsername()));
     }
 
     @GetMapping("/{scheduleId}")
-    public ResponseEntity<Experience> getExperienceById(
+    public ResponseEntity<ExperienceResponse> getExperienceById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long experienceId) {
-        Experience experience = experienceService.getExperienceById(experienceId, userDetails.getUsername());
-        return ResponseEntity.ok(experience);
+        return ResponseEntity.ok(experienceService.getExperienceById(experienceId, userDetails.getUsername()));
     }
 
     @PutMapping("/{scheduleId}")
-    public ResponseEntity<Experience> updateExperience(
+    public ResponseEntity<ExperienceResponse> updateExperience(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long experienceId,
-            @Valid @RequestBody CreateExperienceRequest request) {
-        Experience experience = experienceService.updateExperience(experienceId, userDetails.getUsername(), request);
-        return ResponseEntity.ok(experience);
+            @Valid @RequestBody ExperienceRequest request) {
+        return ResponseEntity.ok(experienceService.updateExperience(experienceId, userDetails.getUsername(), request));
     }
 
     @DeleteMapping("/{scheduleId}")
@@ -67,11 +62,9 @@ public class ExperienceController {
     }
 
     @GetMapping("/{experienceId}/activities")
-    public ResponseEntity<List<Activity>> getExperienceActivities(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<List<ActivityResponse>> getExperienceActivities(
             @PathVariable Long experienceId) {
-        List<Activity> activities = experienceService.getExperienceActivities(experienceId, userDetails.getUsername());
-        return ResponseEntity.ok(activities);
+        return ResponseEntity.ok(experienceService.getExperienceActivities(experienceId));   
     }
 
     @DeleteMapping("/{experienceId}/activities/{activityId}")
@@ -84,35 +77,23 @@ public class ExperienceController {
     }
 
     @PostMapping("/suggest")
-    public ResponseEntity<List<ActivityDto>> suggestExperience(
+    public ResponseEntity<List<ActivityResponse>> suggestActivities(     
             @RequestParam String prompt,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam String location) {
-        List<ActivityDto> suggestions = chatGPTService.generateExperienceSuggestions(prompt, startDate, endDate, location);
+        List<ActivityResponse> suggestions = chatGPTService.generateActivitiesSuggestions(prompt, startDate, endDate, location);
         return ResponseEntity.ok(suggestions);
     }
 
     @PostMapping("/{scheduleId}/refine")
-    public ResponseEntity<List<ActivityDto>> refineSchedule(
+    public ResponseEntity<List<ActivityResponse>> refineSchedule(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long experienceId,
             @RequestParam String refinementPrompt) {
-        Experience experience = experienceService.getExperienceById(experienceId, userDetails.getUsername());
-        List<ActivityDto> currentActivities = experience.getActivities().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
-        List<ActivityDto> refinedActivities = chatGPTService.refineExperience(currentActivities, refinementPrompt);
+        ExperienceResponse experience = experienceService.getExperienceById(experienceId, userDetails.getUsername());   
+        List<ActivityResponse> currentActivities = experience.getActivities();
+        List<ActivityResponse> refinedActivities = chatGPTService.refineExperience(currentActivities, refinementPrompt);
         return ResponseEntity.ok(refinedActivities);
-    }
-
-    private ActivityDto convertToDto(Activity activity) {
-        ActivityDto dto = new ActivityDto();
-        dto.setTitle(activity.getTitle());
-        dto.setDescription(activity.getDescription());
-        dto.setLocation(activity.getLocation());
-        dto.setStartTime(activity.getStartTime());
-        dto.setEndTime(activity.getEndTime());
-        return dto;
     }
 } 

@@ -1,9 +1,10 @@
 package com.example.live_backend.security;
 
-import com.example.live_backend.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.example.live_backend.model.User.User;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -52,5 +53,9 @@ public class CustomUserDetails implements UserDetails {
 
     public User getUser() {
         return user;
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 } 

@@ -17,5 +17,12 @@ public class Achievement {
     private String name;       // e.g., "First Post", "Explorer"
     private String description;
     private String iconUrl;
-    private int pointsAwarded;
+    private int points;
+
+    public Achievement(String code, String name, String description, int points) {
+        this.code = code;
+        this.name = name;
+        this.description = description;
+        this.points = points;
+    }
 }

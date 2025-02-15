@@ -1,7 +1,8 @@
 package com.example.live_backend.repository;
 
 import com.example.live_backend.model.Notification;
-import com.example.live_backend.model.User;
+import com.example.live_backend.model.User.User;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
